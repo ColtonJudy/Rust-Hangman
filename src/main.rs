@@ -127,14 +127,18 @@ fn display_hangman(wrong_guesses: i32) {
 
 fn main() {
     println!("Welcome to Hangman\n");
+
     let mut exit_flag = false;
     let word_to_guess = get_word();
     let mut display_word: String = make_display_word(&word_to_guess);
+
     println!("{display_word}\n");
+
     let mut wrong_guesses = 0;
 
     while exit_flag == false {
         let guess = handle_guess();
+
         if guess != ' ' {
             if modify_display_word(&mut display_word, &word_to_guess, guess) {
                 println!("You guessed correct\n");
