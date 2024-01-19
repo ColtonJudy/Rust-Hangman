@@ -20,10 +20,18 @@ fn make_display_word(word_to_guess: &String) -> String {
 
 fn handle_guess() -> char {
     let mut input = String::new();
+    println!("Guess a letter: ");
     std::io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line");
-    input.trim().parse().expect("Please enter a character")
+    println!("\n");
+
+    if input.trim().len() != 1 {
+        eprintln!("Please enter a single letter");
+        ' '
+    } else {
+        input.trim().parse().expect("Failed to get character")
+    }
 }
 
 fn modify_display_word(display_word: &mut String, word_to_guess: &String, guess: char) -> bool {
@@ -39,38 +47,113 @@ fn modify_display_word(display_word: &mut String, word_to_guess: &String, guess:
     guess_is_correct
 }
 
-fn display_hangman(wrong_guesses: i32, exit_flag: &bool) {
-  
+fn display_hangman(wrong_guesses: i32) {
+    let hangman = match wrong_guesses {
+        1 => {
+            r#"
+  _______
+  |     |
+  |     
+  |     
+  |     
+  |     
+  |______"#
+        }
+        2 => {
+            r#"
+  _______
+  |     |
+  |     O
+  |     
+  |     
+  |     
+  |______"#
+        }
+        3 => {
+            r#"
+  _______
+  |     |
+  |     O
+  |     |
+  |     
+  |     
+  |______"#
+        }
+        4 => {
+            r#"
+  _______
+  |     |
+  |     O
+  |    /|
+  |     
+  |     
+  |______"#
+        }
+        5 => {
+            r#"
+  _______
+  |     |
+  |     O
+  |    /|\
+  |     
+  |     
+  |______"#
+        }
+        6 => {
+            r#"
+  _______
+  |     |
+  |     O
+  |    /|\
+  |    / 
+  |     
+  |______"#
+        }
+        7 => {
+            r#"
+  _______
+  |     |
+  |     O
+  |    /|\
+  |    / \
+  |     
+  |______"#
+        }
+        _ => "",
+    };
+
+    println!("{}\n", hangman);
 }
 
 fn main() {
-    println!("Welcome to Hangman");
+    println!("Welcome to Hangman\n");
     let mut exit_flag = false;
     let word_to_guess = get_word();
     let mut display_word: String = make_display_word(&word_to_guess);
-    println!("{display_word}");
+    println!("{display_word}\n");
     let mut wrong_guesses = 0;
 
     while exit_flag == false {
         let guess = handle_guess();
+        if guess != ' ' {
+            if modify_display_word(&mut display_word, &word_to_guess, guess) {
+                println!("You guessed correct\n");
+                println!("{}\n", display_word);
+            } else {
+                println!("You guessed incorrect\n");
+                wrong_guesses += 1;
+                display_hangman(wrong_guesses);
+                println!("{}\n", display_word);
+            }
 
-        if modify_display_word(&mut display_word, &word_to_guess, guess) {
-            println!("You guessed correct\n\n");
-            println!("{}", display_word);
-        } else {
-            println!("You guessed incorrect\n\n");
-            wrong_guesses += 1;
-            display_hangman(wrong_guesses, &exit_flag);
-            println!("{}", display_word);
-        }
-
-        if wrong_guesses > 7 {
-            println!("You lose!");
-            println!("The word was {}", word_to_guess);
-            exit_flag = true;
-        } else if display_word == word_to_guess {
-            println!("You win!");
-            exit_flag = true;
+            if wrong_guesses > 6 {
+                println!("You lose!");
+                println!("The word was {}", word_to_guess);
+                exit_flag = true;
+            } else if display_word == word_to_guess {
+                println!("You win!");
+                exit_flag = true;
+            }
         }
     }
 }
